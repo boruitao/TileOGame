@@ -1,0 +1,13 @@
+class ActionTile{
+  ActionTileSM{
+    
+    Active{
+              doLand  [turnsUntilActive > 0] -> / {land();} InActive;
+    }
+    
+    InActive{
+              cycleEnd  [turnsUntilActive == 1] / {cycleEnd();} -> Active;
+          cycleEnd  [turnsUntilActive > 0] / {cycleEnd();} -> InActive;
+    }
+  }
+}  

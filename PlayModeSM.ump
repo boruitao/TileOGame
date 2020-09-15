@@ -1,0 +1,129 @@
+class PlayController {
+	PlayControllerStatus{
+	LoadingState {
+      doStartGame(Game game)[game.mode == DESIGN] -> /{
+			startGame(game);
+			game.mode = GAME;
+        } WaitingForPlayerToRoll;
+        
+        doStartGame(Game game)[game.mode == GAME] -> /{ 
+	        startGame(game);
+        } WaitingForPlayerToRoll;
+        
+        doStartGame(Game game)[game.mode == GAME_MOVETILE] -> /{
+	        startGame(game);
+        }  PlayerChoosingTile;
+        
+        doStartGame(Game game)[game.mode == GAME_DRAWCARD] -> /{
+	        startGame(game);
+        } ActionCardBeingDrawn;
+        
+        doStartGame(Game game)[game.mode == GAME_LOSETURNACTIONCARD] -> /{
+            startGame(game);
+        }  LoseTurnActionCardDrawn;
+        
+        doStartGame(Game game)[game.mode == GAME_ROLLDIEACTIONCARD] -> /{
+            startGame(game);
+        } RollDieActionCardDrawn;
+        
+        doStartGame(Game game)[game.mode == GAME_CONNECTTILESACTIONCARD] -> /{
+         	startGame(game);
+        }  ConnectTilesActionCardDrawn;
+        
+        doStartGame(Game game)[game.mode == GAME_REMOVECONNECTIONACTIONCARD] ->/{
+           	startGame(game);
+        }  RemoveConnectionActionCardDrawn;
+        
+        doStartGame(Game game)[game.mode == GAME_TELEPORTACTIONCARD] -> /{
+         	startGame(game);
+         }  TeleportActionCardDrawn;
+	}
+
+   PlayingState {
+   
+	    WaitingForPlayerToRoll {
+           doRollDice()-> PlayerChoosingTile;
+	    }
+	    
+        PlayerChoosingTile {
+           landOnTile() -> PlayerHasLanded;
+        }
+        
+        PlayerHasLanded {
+           winGame() [game.mode == WIN] -> GameWon;
+              drawActionCard()[game.mode == GAME_DRAWCARD] -> ActionCardBeingDrawn;
+              endTurn() [game.Mode == GAME] -> PlayerFinishedTurn;
+        }
+        
+        ActionCardBeingDrawn {
+           drawActionCard() -> ActionCardDrawn;
+        }
+        
+        ActionCardDrawn {
+            changeGameMode() [getDrawnActionCard() == ConnectTilesActionCard] -> / {
+	         	 game.mode = GAME_ADDCONNECTIONACTIONCARD;
+	          } ConnectTilesActionCardDrawn;
+	          
+	          changeGameMode() [getDrawnActionCard() == LoseTurnActionCard] -> / {
+                 game.mode = GAME_LOSETURNACTIONCARD;
+              } LoseTurnActionCardDrawn;
+              
+      		  changeGameMode() [getDrawnActionCard() == RemoveConnectionActionCard] -> / {
+      		  	game.mode = GAME_REMOVECONNECTIONACTIONCARD;
+             } RemoveConnectionActionCardDrawn;
+             
+     		  changeGameMode() [getDrawnActionCard() == RollDieActionCard] -> / {
+				game.mode = GAME_ROLLDIEACTIONCARD;
+             } RollDieActionCardDrawn;t
+             
+       		 changeGameMode() [getDrawnActionCard() == TeleportActionCard] -> / {
+       		 	game.mode = GAME_TELEPORTACTIONCARD;
+             } TeleportActionCardDrawn;
+             
+        }
+        
+        RollDieActionCardDrawn {
+          	         doPlayExtraTurnActionCard() [game.mode == GAME_EXTRATURNACTIONCARD] -> / {
+                  playExtraTurnActionCard(); 
+             } WaitingForPlayerToRoll;
+          }
+          
+        LoseTurnActionCardDrawn {
+                   	   doPlayLoseTurnActionCard() [game.mode == GAME_LOSETURNACTIONCARD] -> / {
+                  playLoseTurnActionCard(); 
+               } PlayerFinishedTurn;
+           }
+           
+        TeleportActionCardDrawn {
+          	         doPlayTeleportActionCard() [game.mode == GAME_TELEPORTACTIONCARD] -> / {
+                   playLoseTurnActionCard();
+              } PlayerChoosingTile;
+           }
+           
+        ConnectTilesActionCardDrawn {
+          	         doPlayAddConnectionActionCard() [game.mode == GAME_ADDCONNECTIONACTIONCARD] -> / {
+                   playAddConnectionCard();
+            } PlayerFinishedTurn;
+           }
+
+         RemoveConnectionActionCardDrawn {
+	         doRemoveConnectionActionCard() [game.mode == GAME_REMOVECONNECTIONACTIONCARD] -> / {
+                    playRemoveConnectionActionCard();
+             } PlayerFinishedTurn;
+            }
+
+         GameWon {
+             //Game.mode = GAME_WON 
+           }
+         
+         PlayerFinishedTurn{
+         	entry/{
+         	game.currentPlayer().endTurn();
+         	for(Player p:game.getPlayers()){
+         		p.decreaseTurn();
+         	}
+         	};
+         }
+      }
+   }
+}

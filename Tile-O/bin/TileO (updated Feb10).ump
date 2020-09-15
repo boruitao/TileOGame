@@ -1,0 +1,89 @@
+namespace ca.mcgill.ecse223.tileo.model;
+
+class TileO {
+  1 <@>- * Game games;
+  1 -> 0..1 Game currentGame;
+}
+
+class Game {
+  mode { DESIGN{} GAME{} GAME_WON{} GAME_ROLLDIEACTIONCARD{} GAME_CONNECTTILESACTIONCARD{} GAME_REMOVECONNECTIONACTIONCARD{} GAME_TELEPORTACTIONCARD{} GAME_LOSETURNACTIONCARD{} }
+  1 <@>- 2..4 Player players;
+  1 <@>- * Tile tiles;
+  1 <@>- * Connection connections;
+  1 <@>- 1 Deck deck;
+  1 <@>- 1 Die die;
+  1 -> 0..1 Player currentPlayer;
+  1 -> 0..1 WinTile winTile;
+  const Integer SpareConnectionPieces = 32;
+  Integer currentConnectionPieces;
+  const Integer NumberOfActionCards = 32;
+}
+
+class Player {
+  color { RED{} BLUE{} GREEN{} YELLOW{} }
+  1 -> 0..1 Tile startingTile;
+  0..4 -> 0..1 Tile currentTile;
+  unique Integer number;
+  Integer turnsUntilActive = 0;
+}
+
+class Tile {
+  abstract;
+
+  2 tiles -- 0..4 Connection connections;
+  Integer x;
+  Integer y;
+  Boolean hasBeenVisited = false;
+}
+
+class ActionTile {
+  isA Tile;
+
+  immutable Integer inactivityPeriod;
+  Integer turnsUntilActive= 0;
+}
+
+class NormalTile {
+  isA Tile;
+}
+
+class WinTile {
+  isA Tile;
+}
+
+class Connection {
+}
+
+class Deck {
+  1 <@>- 0..32 ActionCard cards;
+  1 -> 0..1 ActionCard currentCard;
+}
+
+class ActionCard {
+  abstract;
+
+  immutable String instructions;
+}
+
+class RollDieActionCard {
+  isA ActionCard;
+}
+
+class ConnectTilesActionCard {
+  isA ActionCard;
+}
+
+class RemoveConnectionActionCard {
+  isA ActionCard;
+}
+
+class TeleportActionCard {
+  isA ActionCard;
+}
+
+class LoseTurnActionCard {
+  isA ActionCard;
+}
+
+class Die {
+}

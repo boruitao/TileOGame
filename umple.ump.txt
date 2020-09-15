@@ -1,0 +1,50 @@
+class GameEngine{
+  1 -- * Session session;
+}
+
+class Session{
+  int totalTurns;
+  1 Session <@>-* ActionDeck actionDeck;
+  * Session <@>-2..4 Player player;
+  1 Session <@>-1 Board board;
+}
+
+class Player{
+  boolean skip;
+  0..4 -- 1 Tile tile;
+}
+
+class Board{
+1 Board <@>-* Tile tile;
+}
+
+class ActionDeck{
+1 -- 32 ActionCard actionCard;
+}
+
+class ActionCard{
+ actionType{skipTurn{} extraTurn{} removeConnection{} changeTile{} loseTurn{}}
+}
+
+class Location{
+  int x;
+  int y;
+  1 Location <@>-0..1 Tile tile;
+}
+
+class Tile{
+  0..1 tileA -- 0..1 Tile tileB;
+
+}
+
+class ActionTile{
+  int xPower;
+  int lastVisited;
+ isA Tile;
+}
+
+class GreyTile{
+ isA Tile;
+}
+
+class Connection{}

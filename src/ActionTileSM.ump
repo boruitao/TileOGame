@@ -1,0 +1,17 @@
+class ActionTile {
+actionTileStatus {
+Active {
+deactivate() [getInactivityPeriod() > 0] / { 
+setTurnsUntilActive(getInactivityPeriod() + 1 ); 
+}  -> Inactive; 
+} 
+Inactive {
+takeTurn() [getTurnsUntilActive() > 1] / { 
+setTurnsUntilActive(getTurnsUntilActive() - 1);   
+}  -> Inactive; 
+takeTurn() [getTurnsUntilActive() <= 1] / { 
+setTurnsUntilActive(0);
+}  -> Active; 
+} 
+} 
+}

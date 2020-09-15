@@ -1,0 +1,51 @@
+namespace ca.mcgill.ecse223.tileo.model;
+
+class GameEngine{
+  1 -- 1 Session session;
+}
+
+class Session{
+  int totalTurns;
+  const Integer NumberOfConnections = 32;
+  1 session <@>-* ActionDeck actionDeck;
+  * session <@>-2..4 Player player;
+  1 session <@>-1 Board board;
+}
+
+class Player{
+  boolean skipTurn;
+  0..4 -- 1 Tile tile;
+}
+
+class Board{
+1 Board <@>-* Tile tile;
+}
+
+class ActionDeck{
+1 -- 32 ActionCard actionCard;
+}
+
+class ActionCard{
+ actionType{extraTurn{} addConnection{} removeConnection{} changeTile{} loseTurn{}}
+}
+
+class Location{
+  int x;
+  int y;
+  1 Location <@>-0..1 Tile tile;
+}
+
+class Tile{
+  0..4 tileA -- 0..4 Tile tileB;
+
+}
+
+class ActionTile{
+  int coolDownTurns;
+  int lastVisitedTurn;
+ isA Tile;
+}
+
+class GreyTile{
+ isA Tile;
+}

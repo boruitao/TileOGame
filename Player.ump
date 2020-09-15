@@ -1,0 +1,18 @@
+class Player{
+  PlayerSM{
+    
+    IsTurn{
+         endTurn() / {
+         	turnsUntilActive+=game.numberOfPlayers();
+         } -> IsNotTurn;
+    }
+  
+    IsNotTurn{
+         startTurn() [turnsUntilActive==0] / {} -> IsTurn;
+         decreaseTurn() [turnsUntilActive>0] / {
+         	turnsUntilActive := turnsUntilActive - 1;
+         } -> IsNotTurn;
+    }
+
+  }
+}
